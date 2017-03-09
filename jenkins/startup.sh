@@ -16,12 +16,20 @@ fi
 echo "$0: Jenkins starting .. ";echo
 java $JAVA_OPTS -jar /usr/share/jenkins/jenkins.war&
 
+# Give the jenkins some time to start up
+sleep 15
 
 echo "$0: Jenkins check on installed plugins .. ";echo
+COUNT=15
 until java -jar /root/.jenkins/war/WEB-INF/jenkins-cli.jar -s http://127.0.0.1:8080/ list-plugins > INSTALLED_PLUGINS 2>/dev/null
 do
     echo "$0: Jenkins is not ready .. ";echo
     sleep 3
+    COUNT=$((COUNT-1))
+    if [ ${COUNT} -eq "0" ]; then
+        echo "$0: Exiting, will retry ... ";echo
+        exit 1
+    fi
 done
 
 RESTART=''
@@ -36,19 +44,17 @@ do
     fi
 done
 
-if [ ${RESTART} == 'true' ]; then
+if [ "${RESTART}" == "true" ]; then
     echo "$0: Restarting Jenkins to activate plugins ...";echo
     java -jar /root/.jenkins/war/WEB-INF/jenkins-cli.jar -s http://127.0.0.1:8080/ restart
+    sleep 2
+    echo "$0: Exiting ...";echo
+    exit 1
 fi
 
-# Apcera apc CLI
-route=`echo $TARGET | cut -d '/' -f3`
-wget https://api.${route}/v1/apc/download/linux_amd64/apc.zip
-unzip apc.zip -d /usr/local/bin
-apc target $TARGET
-apc login --app-auth
-
 echo "$0: Sleeping forever ...";echo
-while kill -0 `pidof java` ; do
+while kill -0 `pidof java` 2> /dev/null ; do
   sleep 1
 done
+echo "$0: Exiting ...";echo
+exit 1

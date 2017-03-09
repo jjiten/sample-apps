@@ -1,7 +1,7 @@
 {
   "jobs": {
-    "job::${NAMESPACE}::jenkins-slave": {
-      "docker": {
+    "job::${NAMESPACE}::jenkins-docker": {
+      "slave": {
         "image": "apcerademos/jenkins:latest"
       },
       "start": {
@@ -45,7 +45,7 @@
         "timeout" : 120
       },
       "resources": {
-        "memory": "2GB",
+        "memory": "4GB",
         "disk_space": "5GB"
       },
       "services": {
