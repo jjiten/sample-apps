@@ -22,7 +22,7 @@ For more information on multi-resource manifests see: http://docs.apcera.com/job
 ## Run the Docker image on Apcera
 Use APC to create a Jenkins master job from your Docker registry. The -r flag assigns a public route for you to access Jenkins. The envrionment variable "target" should reflect the address of the Apcera cluster. The provider flag sets up persistent storage for the Jenkins directory: /root/.jenkins.
 ```
-apc docker run jenkins-master -i my-repo/jenkins -m 2G -d 5G --port 8080 -ae -r http://master-jenkins.demo.apcera.net -e target="http://demo.apcera.net" --provider  /apcera/providers::apcfs --batch --no-start
+apc docker run jenkins-master -i my-repo/jenkins -m 4G -d 5G --port 8080 -ae -r http://master-jenkins.demo.apcera.net -e target="http://demo.apcera.net" --provider  /apcera/providers::apcfs --batch --no-start
 ```
 
 Use APC to create the Jenkins slave job from your Docker registry. Here we need to change the startup command with the -s flag because the slave nodes require a different application to connect to the Jenkins master.
