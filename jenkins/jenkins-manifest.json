@@ -45,7 +45,7 @@
         "timeout" : 120
       },
       "resources": {
-        "memory": "2GB",
+        "memory": "4GB",
         "disk_space": "5GB"
       },
       "services": {
@@ -97,5 +97,4 @@
       ]
     }
   }
-
 }
