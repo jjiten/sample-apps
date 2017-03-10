@@ -8,6 +8,7 @@ else
     echo "$0: TARGET CLUSTER is ${TARGET}";echo
 fi
 MASTER="http://master.apcera.local:8080"
+JENKINS_HOME=/var/jenkins_home
 
 
-java -jar cli.jar -fsroot /root/.jenkins/workspace -master ${MASTER} -executors 1
+java -jar /cli.jar -fsroot ${JENKINS_HOME}/workspace -master ${MASTER} -executors 1

@@ -2,7 +2,7 @@
   "jobs": {
     "job::${NAMESPACE}::jenkins-slave": {
       "docker": {
-        "image": "apcerademos/jenkins:latest"
+        "image": "apcerademos/jenkins:test"
       },
       "start": {
         "cmd": "bash /slave.sh",
@@ -22,22 +22,24 @@
         "NFS": {
           "fqn": "service::${NAMESPACE}::jenkins-master-nfs",
           "params": {
-            "mountpath": "/root/.jenkins"
+            "mountpath": "/var/jenkins_home"
           }
         }
       },
       "env": {
-        "TARGET": "http://${CLUSTERNAME}"
+          "TARGET": "http://${CLUSTERNAME}",
+          "JENKINS_HOME": "/var/jenkins_home"
       },
       "state": "started",
       "instances": 1
     },
     "job::${NAMESPACE}::jenkins-master": {
       "docker":  {
-        "image": "apcerademos/jenkins:latest"
+        "image": "apcerademos/jenkins:test"
       },
       "env": {
-        "TARGET": "http://${CLUSTERNAME}"
+          "TARGET": "http://${CLUSTERNAME}",
+          "JENKINS_HOME": "/var/jenkins_home"
       },
       "state": "started",
       "start": {
@@ -58,7 +60,7 @@
         "NFS": {
           "fqn": "service::${NAMESPACE}::jenkins-master-nfs",
           "params": {
-            "mountpath": "/root/.jenkins"
+            "mountpath": "/var/jenkins_home"
           }
         }
       },
