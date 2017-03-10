@@ -22,12 +22,13 @@
         "NFS": {
           "fqn": "service::${NAMESPACE}::jenkins-master-nfs",
           "params": {
-            "mountpath": "/root/.jenkins"
+            "mountpath": "/var/jenkins_home"
           }
         }
       },
       "env": {
-        "TARGET": "http://${CLUSTERNAME}"
+          "TARGET": "http://${CLUSTERNAME}",
+          "JENKINS_HOME": "/var/jenkins_home"
       },
       "state": "started",
       "instances": 1
@@ -37,7 +38,8 @@
         "image": "apcerademos/jenkins:latest"
       },
       "env": {
-        "TARGET": "http://${CLUSTERNAME}"
+          "TARGET": "http://${CLUSTERNAME}",
+          "JENKINS_HOME": "/var/jenkins_home"
       },
       "state": "started",
       "start": {
@@ -58,7 +60,7 @@
         "NFS": {
           "fqn": "service::${NAMESPACE}::jenkins-master-nfs",
           "params": {
-            "mountpath": "/root/.jenkins"
+            "mountpath": "/var/jenkins_home"
           }
         }
       },
