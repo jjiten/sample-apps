@@ -1,7 +1,7 @@
 {
   "jobs": {
-    "job::${NAMESPACE}::jenkins-docker": {
-      "slave": {
+    "job::${NAMESPACE}::jenkins-slave": {
+      "docker": {
         "image": "apcerademos/jenkins:latest"
       },
       "start": {
@@ -97,5 +97,4 @@
       ]
     }
   }
-
 }
