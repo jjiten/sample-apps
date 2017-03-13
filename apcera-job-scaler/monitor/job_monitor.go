@@ -62,7 +62,7 @@ func (jm *defaultJobMonitor) establishEventsSession() error {
 	var err error
 	jm.wampClient, err = turnpike.NewWebsocketClient(turnpike.JSON, targetURL, nil)
 	if err != nil {
-		return fmt.Errorf("Failed creating the wamp websocket transport to ", targetURL, err)
+		return fmt.Errorf("Failed creating the wamp websocket transport to %q: %s", targetURL, err)
 	}
 	_, err = jm.wampClient.JoinRealm(esRealm, nil)
 	if err != nil {
