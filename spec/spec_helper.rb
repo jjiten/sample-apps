@@ -1,5 +1,6 @@
 require 'open3'
 require 'logger'
+require 'json'
 
 $logger = Logger.new(STDOUT)
 $logger.level = Logger::WARN
@@ -17,16 +18,16 @@ end
 # Run the apc command with the given parameters.
 def apc(command)
   cmd_line = "apc #{command} --batch"
-  execute(cmd_line)
-end
-
-def execute(command)
-  stdout, stderr, status = Open3.capture3(command)
+  stdout, stderr, status = execute(cmd_line)
 
   SimpleLog.log.info { "STDOUT: #{stdout}" } unless stdout.empty?
   SimpleLog.log.info { "STDERR: #{stderr}" } unless stderr.empty?
 
   [stdout, stderr, status]
+end
+
+def execute(command)
+  Open3.capture3(command)
 end
 
 def get(url)
@@ -39,5 +40,27 @@ end
 def route(app)
   cmd_line = "apc job show #{app} | grep Route | awk '{print $4}'"
   stdout, stderr, status = execute(cmd_line)
-  stdout
+  stdout.strip
+end
+
+# If provided then true, else false
+def provided?(name)
+  cmd_line = "apc package list -ns / --json"
+  stdout, stderr, status = execute(cmd_line)
+  JSON.parse(stdout).each do |package|
+    if package['provides']
+      package['provides'].each do |providers|
+        if providers['name'] == name
+          return true
+        end
+      end
+    end
+  end
+  false
+end
+
+def provided(name)
+  if provided? name
+    yield
+  end
 end

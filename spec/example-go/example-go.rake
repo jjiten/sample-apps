@@ -3,10 +3,10 @@ namespace :example_go do
 
   desc "Install the #{sample_app} sample application."
   task :install do
-    cd(sample_app) {
+    cd(sample_app) do
       apc "app create #{sample_app}"
       apc "app start #{sample_app}"
-    }
+    end
   end
 
   desc "Test the #{sample_app} sample application after it is deployed."
@@ -16,9 +16,9 @@ namespace :example_go do
 
   desc "Teardown the #{sample_app} sample application."
   task :teardown do
-    cd(sample_app) {
+    cd(sample_app) do
       apc "app delete #{sample_app}"
-    }
+    end
   end
 
   task :all => [:install, :test, :teardown]

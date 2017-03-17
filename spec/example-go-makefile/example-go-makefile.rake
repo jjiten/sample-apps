@@ -1,5 +1,5 @@
-namespace :example_bash do
-  sample_app = 'example-bash'
+namespace :example_go_makefile do
+  sample_app = 'example-go-makefile'
 
   desc "Install the #{sample_app} sample application."
   task :install do
@@ -24,5 +24,5 @@ namespace :example_bash do
   task :all => [:install, :test, :teardown]
 end
 
-desc "Install, test, and teardown the example-bash sample application."
-task :example_bash => 'example_bash:all'
+desc "Install, test, and teardown the example-go-makefile sample application."
+task :example_go_makefile => 'example_go_makefile:all'

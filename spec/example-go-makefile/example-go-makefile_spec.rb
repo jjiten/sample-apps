@@ -1,8 +1,8 @@
 # encoding: utf-8
 require 'spec_helper'
 
-RSpec.describe 'example-go' do
-  let (:app) { 'example-go' }
+RSpec.describe 'example-go-makefile' do
+  let (:app) { 'example-go-makefile' }
 
   it 'should respond with an http 200 and contain hello world' do
     rsp = get(route(app))

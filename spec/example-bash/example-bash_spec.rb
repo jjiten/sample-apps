@@ -4,7 +4,7 @@ require 'spec_helper'
 RSpec.describe 'example-bash' do
   let (:app) { 'example-bash' }
 
-  it 'should respond with an åhttp 200' do
+  it 'should respond with an http 200 and contain sample text' do
     rsp = get(route(app))
     expect(rsp.code).to eq("200")
     expect(rsp.body).to include("Sample Index.html")

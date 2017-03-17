@@ -7,10 +7,12 @@ require_relative 'spec/spec_helper.rb'
 
 Dir.glob('spec/*/*.rake').each { |r| load r}
 
+desc 'Call install, test, and teardown on all sample apps.'
 task :default do
   [:install, :test, :teardown].each { |t| Rake::Task[t].execute }
 end
 
+desc 'Call install on all sample apps.'
 task :install do
   Rake::Task.tasks().each do |task|
     if task.name.end_with? ":install"
@@ -19,6 +21,7 @@ task :install do
   end
 end
 
+desc 'Call test on all sample apps.'
 task :test do
   RSpec::Core::RakeTask.new(:spec) do |t|
     t.pattern = 'spec/*/*_spec.rb'
@@ -26,6 +29,7 @@ task :test do
   Rake::Task["spec"].execute
 end
 
+desc 'Call teardown on all sample apps.'
 task :teardown do
   Rake::Task.tasks().each do |task|
     if task.name.end_with? ":teardown"
