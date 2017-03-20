@@ -26,6 +26,6 @@ func main() {
 			log.Println(err)
 		}
 
-		fmt.Printf("[%s] %s", time.Now(), string(buf[:n]))
+		fmt.Printf("[%s] %s\n", time.Now(), string(buf[:n]))
 	}
 }

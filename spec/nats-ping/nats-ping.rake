@@ -5,10 +5,8 @@ namespace :nats_ping do
   task :install do
     cd(sample_app) do
       apc "docker run #{sample_app}-nats-server -i nats --restart always"
-      apc "docker run #{sample_app}-client -i apcera/nats-ping-client"
+      apc "docker run #{sample_app}-client -i apcera/nats-ping-client --no-start"
       apc "job link #{sample_app}-client --to #{sample_app}-nats-server --name nats --port 4222"
-      # We have to start nats-ping-client because the job link didn't exist when
-      # it was started, so it errored out.
       apc "job start #{sample_app}-client"
     end
   end
