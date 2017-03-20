@@ -6,7 +6,7 @@ To create the app, perform the following:
 
 ```
 cd example-java-hello
-apc app create example-java-hello-app
+apc app create example-java-hello-app --disable-routes
 ```
 
 Next, start the app as follows:
