@@ -29,6 +29,15 @@ task :test do
   Rake::Task["spec"].execute
 end
 
+desc 'Call restart on all sample apps.'
+task :restart do
+  Rake::Task.tasks().each do |task|
+    if task.name.end_with? ":restart"
+      Rake::Task[task].execute
+    end
+  end
+end
+
 desc 'Call teardown on all sample apps.'
 task :teardown do
   Rake::Task.tasks().each do |task|

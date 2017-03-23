@@ -31,6 +31,15 @@ namespace :example_go_rabbitmq do
     end
   end
 
+  desc "Restart the #{sample_app} sample application."
+  task :restart do
+    provided("rabbitmq") do
+      cd(sample_app) do
+        apc "app restart #{sample_app}"
+      end
+    end
+  end
+
   desc "Teardown the #{sample_app} sample application."
   task :teardown do
     alert_package_missing

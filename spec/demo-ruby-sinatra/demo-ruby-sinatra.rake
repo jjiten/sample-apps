@@ -20,6 +20,13 @@ namespace :demo_ruby_sinatra do
     rspec sample_app
   end
 
+  desc "Restart the #{sample_app} sample application."
+  task :restart do
+    cd(sample_app) do
+      apc "app restart #{sample_app}"
+    end
+  end
+
   desc "Teardown the #{sample_app} sample application."
   task :teardown do
     cd(sample_app) do
