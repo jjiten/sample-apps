@@ -1,0 +1,53 @@
+{
+  "jobs": {
+    "job::${NAMESPACE}::netserver": {
+      "docker": {
+        "image": "paultiplady/netserver:latest"
+      },
+      "start": {
+        "cmd": "netserver -L 0.0.0.0,AF_INET -4 -D -d -v 3",
+        "timeout" : 120
+      },
+      "resources": {
+        "memory": "2GB",
+        "disk_space": "5GB",
+        "network": "1000Mbps"
+      },
+      "state": "started",
+      "instances": 1
+    },
+    "job::${NAMESPACE}::netperf": {
+      "docker":  {
+        "image": "paultiplady/netserver:latest"
+      },
+      "start": {
+        "cmd": "netperf –l 10 -i 10 -I 95,1 -c -j -H netserver.apcera.local -t OMNI -- -D -T tcp -O THROUGHPUT,THROUGHPUT_UNITS,STDDEV_LATENCY,LOCAL_CPU_UTIL",
+        "timeout" : 120
+      },
+      "state": "started",
+      "instances": 1,
+      "resources": {
+        "memory": "4GB",
+        "disk_space": "5GB",
+        "network": "1000Mbps"
+      },
+      "env": {
+          "TEST_LEN": "${TEST_LEN}"
+      },
+      "exposed_ports": [ 12865 ]
+    }
+  },
+  "networks": {
+    "network::${NAMESPACE}::netperf-network": {
+      "jobs": [
+        {
+          "fqn": "job::${NAMESPACE}::netserver",
+          "discovery_address": "netserver"
+        },
+        {
+          "fqn": "job::${NAMESPACE}::netperf"
+        }
+      ]
+    }
+  }
+}
