@@ -31,7 +31,7 @@ type FeedbackRescalerConfig struct {
 }
 
 func NewFeedbackRescaler(config *FeedbackRescalerConfig) *FeedbackRescaler {
-	return &FeedbackRescaler{kp: config.KP, ki: config.KI, kd: config.KD, lastT: time.Now().Unix(), inverted: config.Inverted}
+	return &FeedbackRescaler{setpoint: config.Setpoint, kp: config.KP, ki: config.KI, kd: config.KD, lastT: time.Now().Unix(), inverted: config.Inverted}
 }
 
 func (f *FeedbackRescaler) Rescale(actual float64) int {
