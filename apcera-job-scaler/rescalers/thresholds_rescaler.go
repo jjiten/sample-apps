@@ -7,8 +7,15 @@ type ThresholdsRescaler struct {
 	inverted bool
 }
 
-func NewThresholdsRescaler(upper, lower float64, size int, inverted bool) *ThresholdsRescaler {
-	return &ThresholdsRescaler{upper: upper, lower: lower, size: size}
+type ThresholdsRescalerConfig struct {
+	Upper    float64
+	Lower    float64
+	Size     int
+	Inverted bool
+}
+
+func NewThresholdsRescaler(config *ThresholdsRescalerConfig) *ThresholdsRescaler {
+	return &ThresholdsRescaler{upper: config.Upper, lower: config.Lower, size: config.Size, inverted: config.Inverted}
 }
 
 func (t *ThresholdsRescaler) Rescale(actual float64) int {
