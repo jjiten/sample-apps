@@ -10,6 +10,7 @@ import (
 
 	"github.com/apcera/sample-apps/apcera-job-scaler/metrics"
 	"github.com/apcera/sample-apps/apcera-job-scaler/monitor"
+	"github.com/apcera/sample-apps/apcera-job-scaler/rescalers"
 	"github.com/apcera/sample-apps/apcera-job-scaler/sink"
 	"github.com/apcera/sample-apps/apcera-job-scaler/util"
 	"github.com/op/go-logging"
@@ -50,7 +51,9 @@ type JobScaler struct {
 	// jobMonitor subscribes to events on FQNs on which auto-scaling has been requested.
 	jobMonitor monitor.JobMonitor
 	// jobMetricCal provides with generic resource metric algorithms.
-	jobMetricCalc metrics.JobMetricCalc
+	jobMetricCalc  metrics.JobMetricCalc
+	rescaler       rescalers.Rescaler
+	verboseLogging bool
 }
 
 // NewJobScaler prototypes a possible Job Auto Scaler behavior.
@@ -117,61 +120,44 @@ func (js *JobScaler) AutoScale(config ScalingJobConfig, done chan bool) {
 				log.Error(err)
 				continue
 			}
-			if cpuUtil > float64(config.cpuRoof) {
-				js.scaleUp(config)
-			}
-			if cpuUtil < float64(config.cpuFloor) {
-				js.scaleDown(config)
-			}
+			js.rescale(config, js.rescaler.Rescale(cpuUtil))
 		case <-done:
 			return
 		}
 	}
 }
 
-func (js *JobScaler) scaleUp(sj ScalingJobConfig) {
+func (js *JobScaler) rescale(sj ScalingJobConfig, size int) {
+	if size == 0 {
+		if js.verboseLogging {
+			log.Info("No need to rescale job")
+		}
+		return
+	}
 	job, err := util.GetJob(sj.jobFQN)
 	if err != nil {
-		log.Errorf("Failed scaling up job %v. %v", sj.jobFQN, err)
+		log.Errorf("Failed to rescale job %v. %v", sj.jobFQN, err)
 		return
 	}
 	n := job["num_instances"].(json.Number)
 	curCount, _ := strconv.Atoi(string(n))
-	newCount := curCount + sj.instanceCounter
+	newCount := curCount + size
 	if int(newCount) > sj.maxInstances {
 		log.Info("Maximum number of instances that could be scaled up to is ", sj.maxInstances)
 		return
 	}
-
-	job["num_instances"] = newCount
-	err = util.SetJob(job)
-	if err != nil {
-		log.Errorf("Failed scaling up job %v. %v", sj.jobFQN, err)
-		return
-	}
-	log.Infof("Scaled up job instances from  %v to %v", curCount, newCount)
-}
-
-func (js *JobScaler) scaleDown(sj ScalingJobConfig) {
-	job, err := util.GetJob(sj.jobFQN)
-	if err != nil {
-		log.Errorf("Failed scaling down job %v. %v", sj.jobFQN, err)
-		return
-	}
-	n := job["num_instances"].(json.Number)
-	curCount, _ := strconv.Atoi(string(n))
-	newCount := curCount - sj.instanceCounter
 	if int(newCount) < sj.minInstances {
 		log.Info("Minimum number of instances that could be scaled down to is ", sj.minInstances)
 		return
 	}
+
 	job["num_instances"] = newCount
 	err = util.SetJob(job)
 	if err != nil {
-		log.Errorf("Failed scaling down job %v. %v", sj.jobFQN, err)
+		log.Errorf("Failed rescaling job %v from %d to %d. %v", sj.jobFQN, curCount, newCount, err)
 		return
 	}
-	log.Infof("Scaled down job instances from  %v to %v", curCount, newCount)
+	log.Infof("Rescaled job instances from %v to %v", curCount, newCount)
 }
 
 // Inactive if the Job Monitor being used by the Job Scaler is down.
