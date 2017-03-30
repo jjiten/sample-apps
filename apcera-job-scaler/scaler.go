@@ -8,6 +8,8 @@ import (
 	"sync"
 	"time"
 
+	"math"
+
 	"github.com/apcera/sample-apps/apcera-job-scaler/metrics"
 	"github.com/apcera/sample-apps/apcera-job-scaler/monitor"
 	"github.com/apcera/sample-apps/apcera-job-scaler/rescalers"
@@ -25,19 +27,11 @@ type ScalingJobConfig struct {
 	jobFQN string
 	// scalingFrequency is how often to scale the job
 	scalingFrequency time.Duration
-	// cpuRoof is the cpu usage in terms of percentage beyond which the
-	// job would like scaling up
-	cpuRoof int
-	// cpuFloor is the cpu usage in terms of percentage below which the
-	// job would like scaling down
-	cpuFloor int
-	// instanceCounter is the no. of instances to be added/deleted
-	// when scaling behavior is triggered
-	instanceCounter int
 	// maxInstances is the max no. of instances the job can be scaled up to
 	maxInstances int
 	// minInstances is the min no. of intsances the job can be scaled down to
 	minInstances int
+	rescaler     rescalers.Rescaler
 }
 
 // JobScaler is built using Job Monitor and Job Metric services/objects.
@@ -52,7 +46,6 @@ type JobScaler struct {
 	jobMonitor monitor.JobMonitor
 	// jobMetricCal provides with generic resource metric algorithms.
 	jobMetricCalc  metrics.JobMetricCalc
-	rescaler       rescalers.Rescaler
 	verboseLogging bool
 }
 
@@ -120,7 +113,7 @@ func (js *JobScaler) AutoScale(config ScalingJobConfig, done chan bool) {
 				log.Error(err)
 				continue
 			}
-			js.rescale(config, js.rescaler.Rescale(cpuUtil))
+			js.rescale(config, config.rescaler.Rescale(cpuUtil))
 		case <-done:
 			return
 		}
@@ -142,14 +135,7 @@ func (js *JobScaler) rescale(sj ScalingJobConfig, size int) {
 	n := job["num_instances"].(json.Number)
 	curCount, _ := strconv.Atoi(string(n))
 	newCount := curCount + size
-	if int(newCount) > sj.maxInstances {
-		log.Info("Maximum number of instances that could be scaled up to is ", sj.maxInstances)
-		return
-	}
-	if int(newCount) < sj.minInstances {
-		log.Info("Minimum number of instances that could be scaled down to is ", sj.minInstances)
-		return
-	}
+	newCount = int(math.Min(math.Max(float64(newCount), float64(sj.minInstances)), float64(sj.maxInstances)))
 
 	job["num_instances"] = newCount
 	err = util.SetJob(job)
