@@ -59,6 +59,20 @@ def provided?(name)
   false
 end
 
+def watch_logs(application, string_to_watch_for, number_of_times, sleep_between)
+  for i in 1..number_of_times
+    stdout, stderr, status = apc "job logs #{application} --no-tail"
+
+    if stdout.include? string_to_watch_for or stderr.include? string_to_watch_for
+      return true
+    end
+
+    sleep sleep_between
+  end
+
+  return false
+end
+
 def provided(name)
   if provided? name
     yield

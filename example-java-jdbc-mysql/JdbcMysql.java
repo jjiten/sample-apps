@@ -14,17 +14,25 @@ public class JdbcMysql
     Class.forName(dbClassName);
     Connection c = null;
 
-    try {
+    while (true){
+      try {
         c = DriverManager.getConnection(CONNECTION);
-    }
-    catch (Exception e) {
+      }
+      catch (Exception e) {
         System.out.println(e);
         e.printStackTrace();
         System.exit(1);
-    }
-    finally {
+      }
+      finally {
         c.close();
+      }
+      System.out.println("MySQL Connection Successful!");
+
+      try {
+        Thread.sleep(1000);
+      } catch(InterruptedException ex) {
+        Thread.currentThread().interrupt();
+      }
     }
-    System.out.println("MySQL Connection Successful!");
   }
 }
