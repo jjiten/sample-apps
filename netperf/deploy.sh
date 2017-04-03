@@ -20,7 +20,7 @@ else
 fi
 
 if [ -z "$2" ]; then
-   echo "Please specify the namespace"
+   echo "Please specify the namespace."
    print_usage
 else
    export NAMESPACE=$2
