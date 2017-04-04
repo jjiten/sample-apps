@@ -66,7 +66,7 @@ func (jm *defaultJobMonitor) establishEventsSession() error {
 	}
 	_, err = jm.wampClient.JoinRealm(esRealm, nil)
 	if err != nil {
-		return fmt.Errorf("Failed joining the Event Server realm ", esRealm, err)
+		return fmt.Errorf("Failed joining the Event Server realm %q: %s", esRealm, err)
 	}
 	// ReceiveDone is notified when the client's connection to the router is lost.
 	jm.wampClient.ReceiveDone = make(chan bool)
