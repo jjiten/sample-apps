@@ -27,13 +27,12 @@ func printScalingJobConfig(config *ScalingJobConfig) {
 // getScalingJobConfig constructs the configurations of the scaling job and
 // its associated scaling triggers from environment variables if set, or else
 // populates with default values
-func getScalingJobConfig() ScalingJobConfig {
-	sj := ScalingJobConfig{}
+func getScalingJobConfig() (*ScalingJobConfig, error) {
+	sj := &ScalingJobConfig{}
 
 	jobFQN := os.Getenv("TARGET_JOB")
 	if jobFQN == "" {
-		fmt.Println("TARGET_JOB not set in environment")
-		os.Exit(1)
+		return nil, fmt.Errorf("TARGET_JOB not set")
 	}
 	sj.jobFQN = jobFQN
 
@@ -74,14 +73,15 @@ func getScalingJobConfig() ScalingJobConfig {
 
 	rescaler, err := makeRescaler(rescalerType)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("failed to make rescaler: %s", err)
 	}
 	sj.rescaler = rescaler
 
-	return sj
+	return sj, nil
 }
 
-func getThresholdsRescalerConfig() *rescalers.ThresholdsRescalerConfig {
+func getThresholdsRescalerConfig() (*rescalers.ThresholdsRescalerConfig, error) {
+	var err error
 	config := &rescalers.ThresholdsRescalerConfig{}
 
 	cpuRoof := os.Getenv("CPU_ROOF")
@@ -89,7 +89,10 @@ func getThresholdsRescalerConfig() *rescalers.ThresholdsRescalerConfig {
 		fmt.Println("CPU_ROOF not set. Defaulting cpu roof to 80%")
 		config.Upper = 80.0
 	} else {
-		config.Upper, _ = strconv.ParseFloat(cpuRoof, 64)
+		config.Upper, err = strconv.ParseFloat(cpuRoof, 64)
+		if err != nil {
+			return nil, fmt.Errorf("invalid CPU_ROOF: %s", err)
+		}
 	}
 
 	cpuFloor := os.Getenv("CPU_FLOOR")
@@ -97,7 +100,10 @@ func getThresholdsRescalerConfig() *rescalers.ThresholdsRescalerConfig {
 		fmt.Println("CPU_FLOOR not set. Defaulting cpu floor to 20%")
 		config.Lower = 20.0
 	} else {
-		config.Lower, _ = strconv.ParseFloat(cpuFloor, 64)
+		config.Lower, err = strconv.ParseFloat(cpuFloor, 64)
+		if err != nil {
+			return nil, fmt.Errorf("invalid CPU_FLOOR: %s", err)
+		}
 	}
 
 	instanceCounter := os.Getenv("INSTANCE_COUNTER")
@@ -105,7 +111,7 @@ func getThresholdsRescalerConfig() *rescalers.ThresholdsRescalerConfig {
 		fmt.Println("INSTANCE_COUNTER not set. Defaulting instance counter to 1")
 		config.Size = 1
 	} else {
-		config.Size, _ = strconv.Atoi(instanceCounter)
+		config.Size, err = strconv.Atoi(instanceCounter)
 	}
 
 	inverted := os.Getenv("INVERTED")
@@ -116,10 +122,11 @@ func getThresholdsRescalerConfig() *rescalers.ThresholdsRescalerConfig {
 		config.Inverted = true
 	}
 
-	return config
+	return config, nil
 }
 
-func getFeedbackRescalerConfig() *rescalers.FeedbackRescalerConfig {
+func getFeedbackRescalerConfig() (*rescalers.FeedbackRescalerConfig, error) {
+	var err error
 	config := &rescalers.FeedbackRescalerConfig{}
 
 	setpoint := os.Getenv("SETPOINT")
@@ -127,7 +134,10 @@ func getFeedbackRescalerConfig() *rescalers.FeedbackRescalerConfig {
 		fmt.Println("SETPOINT not set. Defaulting setpoint to 50%")
 		config.Setpoint = 50.0
 	} else {
-		config.Setpoint, _ = strconv.ParseFloat(setpoint, 64)
+		config.Setpoint, err = strconv.ParseFloat(setpoint, 64)
+		if err != nil {
+			return nil, fmt.Errorf("invalid SETPOINT: %s", err)
+		}
 	}
 
 	kp := os.Getenv("KP")
@@ -135,7 +145,10 @@ func getFeedbackRescalerConfig() *rescalers.FeedbackRescalerConfig {
 		fmt.Println("KP not set. Defaulting KP to 4")
 		config.KP = 4.0
 	} else {
-		config.KP, _ = strconv.ParseFloat(kp, 64)
+		config.KP, err = strconv.ParseFloat(kp, 64)
+		if err != nil {
+			return nil, fmt.Errorf("invalid KP: %s", err)
+		}
 	}
 
 	ki := os.Getenv("KI")
@@ -143,7 +156,10 @@ func getFeedbackRescalerConfig() *rescalers.FeedbackRescalerConfig {
 		fmt.Println("KI not set. Defaulting KI to 0")
 		config.KI = 0.0
 	} else {
-		config.KI, _ = strconv.ParseFloat(ki, 64)
+		config.KI, err = strconv.ParseFloat(ki, 64)
+		if err != nil {
+			return nil, fmt.Errorf("invalid KI: %s", err)
+		}
 	}
 
 	kd := os.Getenv("KD")
@@ -151,7 +167,10 @@ func getFeedbackRescalerConfig() *rescalers.FeedbackRescalerConfig {
 		fmt.Println("KD not set. Defaulting KD to 0")
 		config.KD = 0.0
 	} else {
-		config.KD, _ = strconv.ParseFloat(kd, 64)
+		config.KD, err = strconv.ParseFloat(kd, 64)
+		if err != nil {
+			return nil, fmt.Errorf("invalid KD: %s", err)
+		}
 	}
 
 	inverted := os.Getenv("INVERTED")
@@ -162,26 +181,38 @@ func getFeedbackRescalerConfig() *rescalers.FeedbackRescalerConfig {
 		config.Inverted = true
 	}
 
-	return config
+	return config, nil
 }
 
 func makeRescaler(rescalerType string) (rescalers.Rescaler, error) {
 	if rescalerType == Thresholds {
-		return rescalers.NewThresholdsRescaler(getThresholdsRescalerConfig()), nil
+		config, err := getThresholdsRescalerConfig()
+		if err != nil {
+			return nil, fmt.Errorf("invalid threshold rescaler configuration: %s", err)
+		}
+		return rescalers.NewThresholdsRescaler(config), nil
 	}
 	if rescalerType == Feedback {
-		return rescalers.NewFeedbackRescaler(getFeedbackRescalerConfig()), nil
+		config, err := getFeedbackRescalerConfig()
+		if err != nil {
+			return nil, fmt.Errorf("invalid feedback rescaler configuration: %s", err)
+		}
+		return rescalers.NewFeedbackRescaler(config), nil
 	}
-	return nil, fmt.Errorf("Unknown rescaler type %s", rescalerType)
+	return nil, fmt.Errorf("unknown rescaler type %s", rescalerType)
 }
 
 func main() {
 	// The DefaultJobScaler / the default scaling algorithm to be used
 	// for making scaling decisions.
-	config := getScalingJobConfig()
-	printScalingJobConfig(&config)
+	config, err := getScalingJobConfig()
+	if err != nil {
+		fmt.Println("Failed to configure scaler")
+		os.Exit(1)
+	}
+	printScalingJobConfig(config)
 	jobScaler := NewJobScaler()
-	jobScaler.EnableAutoScale(config)
+	jobScaler.EnableAutoScale(*config)
 
 	for {
 		select {
