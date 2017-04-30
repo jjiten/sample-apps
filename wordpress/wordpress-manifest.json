@@ -2,7 +2,7 @@
     "jobs": {
         "job::${NAMESPACE}::wordpress": {
             "docker": {
-                "image": "library/wordpress:latest"
+                "image": "library/wordpress:${TAG}"
             },
             "exposed_ports": [ 80],
             "routes": [

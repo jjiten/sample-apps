@@ -17,10 +17,10 @@ print_usage()
     echo $USAGE
     echo "Where:"
     echo " -c <clustername>    is the domain name of your cluster"
-    echo " -s <namespace>      is where the MySQL job and provider will be created"
-    echo " -n <nfs-provider>   is the FQN of the nfs provider"
+    echo " -n <namespace>      is where the MySQL job and provider will be created"
+    echo " -v <nfs-provider>   is the FQN of the nfs provider used for the volume"
     echo " -p <mysql-provider> is the FQN of the mysql provider"
-    echo " -v <mysql-version>  for version options please see: https://hub.docker.com/_/mysql"
+    echo " -t <mysql-version>  for version tag options please see: https://hub.docker.com/_/mysql"
     echo " -j <job-name>       is the name of the job to create for the provider mysql server"
     echo " -h                  will print this help message"
     echo ""
@@ -28,7 +28,7 @@ print_usage()
     exit 1
 }
 
-while getopts "hc:s:n:p:j:v:" opt; do
+while getopts "hc:n:v:p:j:t:" opt; do
   case $opt in
       h)
           print_usage >&2
@@ -36,16 +36,16 @@ while getopts "hc:s:n:p:j:v:" opt; do
       c)
           CLUSTERNAME=$OPTARG
           ;;
-      s)
+      n)
           NAMESPACE=$OPTARG
           ;;
-      n)
+      v)
           NFS_PROVIDER=$OPTARG
           ;;
       p)
           MYSQL_PROVIDER=$OPTARG
           ;;
-      v)
+      t)
           MYSQL_VERSION=$OPTARG
           ;;
       j)
@@ -121,14 +121,14 @@ sleep 10
 
 # Register the provider
 COUNT=0
-until [ ${COUNT} -eq 3 ] || apc provider register --batch "${MYSQL_PROVIDER}"  --type mysql --job "${NAMESPACE}::${MYSQL_JOB_NAME}" --port 3306 -u "mysql://root:${PASSWORD}@mysql-provider"
+until [ ${COUNT} -eq 5 ] || apc provider register --batch "${MYSQL_PROVIDER}"  --type mysql --job "${NAMESPACE}::${MYSQL_JOB_NAME}" --port 3306 -u "mysql://root:${PASSWORD}@mysql-provider"
 do
     COUNT=$(($COUNT+1))
     echo "MySQL is not ready, retrying ${COUNT} ... "
-    sleep 5
+    sleep 10
 done
 
-if [ ${COUNT} -ge 3 ]; then
+if [ ${COUNT} -ge 5 ]; then
     echo "ERROR: Registering the provider '${MYSQL_PROVIDER}' " \
         "with job '${NAMESPACE}::${MYSQL_JOB_NAME}'"
     exit 1
