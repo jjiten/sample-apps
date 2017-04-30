@@ -18,7 +18,7 @@ print_usage()
     echo "Where:"
     echo " -c <clustername>    is the domain name of your cluster"
     echo " -n <namespace>      is where the MySQL job and provider will be created"
-    echo " -v <nfs-provider>   is the FQN of the nfs provider used for the volume"
+    echo " -v <nfs-provider>   is the name of the nfs provider (/apcera/providers) to create the volume"
     echo " -p <mysql-provider> is the FQN of the mysql provider"
     echo " -t <mysql-version>  for version tag options please see: https://hub.docker.com/_/mysql"
     echo " -j <job-name>       is the name of the job to create for the provider mysql server"
@@ -81,6 +81,8 @@ fi
 
 if [ -z "${MYSQL_PROVIDER}" ]; then
     MYSQL_PROVIDER=${NAMESPACE}::mysql
+else
+    MYSQL_PROVIDER=${NAMESPACE}::${MYSQL_PROVIDER}
 fi
 
 if [ -z "${MYSQL_VERSION}" ]; then
@@ -96,9 +98,10 @@ export CLUSTERNAME=`echo $CLUSTERNAME | sed -e's/https:\/\///'`
 export CLUSTERNAME=`echo $CLUSTERNAME | sed -e's/http:\/\///'`
 export NFS_PROVIDER=`echo $NFS_PROVIDER | sed -e 's/^provider:://'`
 
-echo -e "Creating MySQL Provider '${MYSQL_PROVIDER}'\n" \
+echo -e "Creating MySQL Provider \n" \
     " Cluster      : ${CLUSTERNAME}\n" \
     " Namespace    : ${NAMESPACE}\n" \
+    " Provider     : ${MYSQL_PROVIDER}\n" \
     " NFS Provider : ${NFS_PROVIDER}\n" \
     " Job Name     : ${MYSQL_JOB_NAME}\n" \
     " MySQL Version: ${MYSQL_VERSION}"

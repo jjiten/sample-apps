@@ -95,6 +95,6 @@ if [ ${RET} -ne 0 ]; then
 fi
 
 # Remove the services created by the docker run with the --volume option
-for i in echo ${SERVICES} ; do
+for i in ${SERVICES} ; do
     apc service delete $i
 done

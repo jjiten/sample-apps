@@ -16,7 +16,7 @@ print_usage()
     echo " -c <clustername>    is the domain name of your cluster"
     echo " -n <namespace>      is where the services and jobs will be created"
     echo " -v <nfs-provider>   is the name of the nfs provider (/apcera/providers) to create the volume"
-    echo " -p <mysql-provider> is the name of the mysql provider that will hold the Wordpress config"
+    echo " -p <mysql-provider> is the FQN of the mysql provider that will hold the Wordpress config"
     echo " -t <wp-version-tag> is the version tag of the wordpress Docker image"
 
     exit 1
