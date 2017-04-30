@@ -6,7 +6,7 @@ print_usage()
     echo $USAGE
     echo "Where:"
     echo " -c <clustername>    is the domain name of your cluster"
-    echo " -s <namespace>      is where the MySQL job and provider will be created"
+    echo " -n <namespace>      is where the MySQL job and provider will be created"
     echo " -p <mysql-provider> is the FQN of the mysql provider"
     echo " -j <job-name>       is the name of the job to create for the provider mysql server"
     echo " -h                  will print this help message"
@@ -15,7 +15,7 @@ print_usage()
     exit 1
 }
 
-while getopts "hc:s:n:p:j:v:" opt; do
+while getopts "hc:n:p:j:" opt; do
   case $opt in
       h)
           print_usage >&2
@@ -23,8 +23,11 @@ while getopts "hc:s:n:p:j:v:" opt; do
       c)
           CLUSTERNAME=$OPTARG
           ;;
-      s)
+      n)
           NAMESPACE=$OPTARG
+          ;;
+      p)
+          MYSQL_PROVIDER=$OPTARG
           ;;
       j)
           MYSQL_JOB_NAME=$OPTARG
@@ -69,12 +72,20 @@ echo -e "Deleting MySQL Provider '${MYSQL_PROVIDER}'\n" \
     " Namespace    : ${NAMESPACE}\n" \
     " Job Name     : ${MYSQL_JOB_NAME}"
 
+# remove the provider
 apc provider delete ${MYSQL_PROVIDER}
 RET=$?
 if [ ${RET} -ne 0 ]; then
     echo "ERROR: Deleting the provider job '${MYSQL_JOB_NAME}': $RET"
 fi
 
+# Get the list of services attached to the mysql-server job
+SERVICES=""
+for i in `apc job show mysql-server | grep 'service::' | sed -e 's/  / /g' | awk -F' ' '{ print $5 }'` ; do
+    SERVICES="${SERVICES} $i"
+done
+
+# remove the server
 apc job delete mysql-server
 RET=$?
 if [ ${RET} -ne 0 ]; then
@@ -82,3 +93,8 @@ if [ ${RET} -ne 0 ]; then
         "'${NAMESPACE}::${MYSQL_JOB_NAME}': $RET"
     exit 1
 fi
+
+# Remove the services created by the docker run with the --volume option
+for i in ${SERVICES} ; do
+    apc service delete $i
+done
