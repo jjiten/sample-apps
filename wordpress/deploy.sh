@@ -15,7 +15,7 @@ print_usage()
     echo "Where:"
     echo " -c <clustername>    is the domain name of your cluster"
     echo " -n <namespace>      is where the services and jobs will be created"
-    echo " -v <nfs-provider>   is the name of the nfs provider that will used to create the volume"
+    echo " -v <nfs-provider>   is the name of the nfs provider (/apcera/providers) to create the volume"
     echo " -p <mysql-provider> is the name of the mysql provider that will hold the Wordpress config"
     echo " -t <wp-version-tag> is the version tag of the wordpress Docker image"
 
@@ -85,13 +85,12 @@ CLUSTERNAME=`echo $CLUSTERNAME | sed -e's/http:\/\///'`
 NFS_PROVIDER=`echo $NFS_PROVIDER | sed -e 's/^provider:://'`
 MYSQL_PROVIDER=`echo $MYSQL_PROVIDER | sed -e 's/^provider:://'`
 
-
 echo "Creating Wordpress with:"
-echo " CLUSTERNAME=${CLUSTERNAME}"
-echo " NAMESPACE=${NAMESPACE}"
-echo " NFS_PROVIDER=${NFS_PROVIDER}"
-echo " MYSQL_PROVIDER=${MYSQL_PROVIDER}"
-echo " WP_VERSION=${WP_VERSION}"
+echo " CLUSTERNAME    ${CLUSTERNAME}"
+echo " NAMESPACE      ${NAMESPACE}"
+echo " NFS_PROVIDER   ${NFS_PROVIDER}"
+echo " MYSQL_PROVIDER ${MYSQL_PROVIDER}"
+echo " WP_VERSION     ${WP_VERSION}"
 
 read -p "Press RETURN to Continue" YES
 
@@ -112,4 +111,6 @@ if [ ${RET} -ne 0 ]; then
 fi
 
 apc manifest deploy wordpress-manifest.json -- \
-  --CLUSTERNAME $CLUSTERNAME --NAMESPACE $NAMESPACE --NFS_PROVIDER $NFS_PROVIDER  --MYSQL_PROVIDER $MYSQL_PROVIDER --TAG $WP_VERSION
+    --CLUSTERNAME $CLUSTERNAME --NAMESPACE $NAMESPACE  \
+    --NFS_PROVIDER $NFS_PROVIDER  --MYSQL_PROVIDER $MYSQL_PROVIDER \
+    --TAG $WP_VERSION
