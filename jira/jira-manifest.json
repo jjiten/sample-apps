@@ -1,0 +1,63 @@
+{
+    "jobs": {
+        "job::${NAMESPACE}::jira": {
+            "docker": {
+                "image": "cptactionhank/atlassian-jira:${TAG}"
+            },
+            "exposed_ports": [ 8080],
+            "routes": [
+                {
+                    "type": "http",
+                    "endpoint": "jira.${CLUSTERNAME}",
+                    "config": {
+                        "/": [ { "weight":100, "port":8080 } ]
+                    }
+                }
+            ],
+            "resources": {
+                "memory": "4GB",
+                "disk_space": "50GB"
+            },
+            "services":{
+                "egress": {
+                    "fqn": "service::/apcera::outside"
+                },
+                "mysql-jira": {
+                    "fqn": "service::${NAMESPACE}::jira-mysql"
+                },
+                "jira-data": {
+                    "fqn": "service::${NAMESPACE}::jira-data",
+                    "params": {
+                        "mountpath": "/var/atlassian/jira"
+                    }
+                }
+            },
+            "env": {
+                "JIRA_DATABASE_URL" : "{{ (binding_service \"jira-mysql\").URI }}",
+                "JIRA_DB_PASSWORD": "{{ (binding_service \"jira-mysql\").URI.Password }}",
+                "CATALINA_OPTS" : "-Xms256m -Xmx1g",
+                "JIRA_PROXY_NAME" : "",
+                "JIRA_PROXY_PORT" : "",
+                "JIRA_PROXY_SCHEME" : "",
+                "JIRA_DELAYED_START" : "10"
+            },
+            "user": "daemon",
+            "group": "daemon",
+            "state": "started"
+        }
+    },
+    "services": {
+        "service::${NAMESPACE}::jira-mysql": {
+            "description": "Database for jira",
+            "name": "jira-mysql",
+            "provider_fqn": "provider::${MYSQL_PROVIDER}",
+            "type": "mysql"
+        },
+        "service::${NAMESPACE}::jira-data": {
+            "description": "NFS storage JIRA",
+            "name": "jira-data",
+            "provider_fqn": "provider::${NFS_PROVIDER}",
+            "type": "nfs"
+        }
+    }
+}
