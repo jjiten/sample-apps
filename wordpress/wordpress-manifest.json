@@ -1,0 +1,58 @@
+{
+    "jobs": {
+        "job::${NAMESPACE}::wordpress": {
+            "docker": {
+                "image": "library/wordpress:${TAG}"
+            },
+            "exposed_ports": [ 80],
+            "routes": [
+                {
+                    "type": "http",
+                    "endpoint": "wordpress.${CLUSTERNAME}",
+                    "config": {
+                        "/": [ { "weight":100, "port":80 } ]
+                    }
+                }
+            ],
+            "services":{
+                "egress": {
+                    "fqn": "service::/apcera::outside"
+                },
+                "mysql-wordpress": {
+                    "fqn": "service::${NAMESPACE}::wordpress-mysql"
+                },
+                "var-www-html": {
+                    "fqn": "service::${NAMESPACE}::wordpress-www-html",
+                    "params": {
+                        "mountpath": "/var/www/html"
+                    }
+                }
+            },
+            "env": {
+                "WORDPRESS_DB_HOST":
+                "{{ (binding_service \"wordpress-mysql\").URI.Host }}:{{ (binding_service \"wordpress-mysql\").URI.Port }}",
+                "WORDPRESS_DB_USER":
+                "{{ (binding_service \"wordpress-mysql\").URI.User }}",
+                "WORDPRESS_DB_PASSWORD":
+                "{{ (binding_service \"wordpress-mysql\").URI.Password }}",
+                "WORDPRESS_DB_NAME":
+                "{{ (binding_service \"wordpress-mysql\").URI.TrimmedPath }}"
+            },
+            "state": "started"
+        }
+    },
+    "services": {
+        "service::${NAMESPACE}::wordpress-mysql": {
+            "description": "Database for wordpress",
+            "name": "wordpress-mysql",
+            "provider_fqn": "provider::${MYSQL_PROVIDER}",
+            "type": "mysql"
+        },
+        "service::${NAMESPACE}::wordpress-www-html": {
+            "description": "NFS storage for blog files",
+            "name": "wordpress-www-html",
+            "provider_fqn": "provider::${NFS_PROVIDER}",
+            "type": "nfs"
+        }
+    }
+}

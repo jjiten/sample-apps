@@ -1,11 +1,14 @@
 #!/bin/bash
 
-# Apcera apc CLI
-route=`echo $TARGET | cut -d '/' -f3`
-wget https://api.${route}/v1/apc/download/linux_amd64/apc.zip
-unzip apc.zip -d /usr/local/bin
-apc target $TARGET
-apc login --app-auth
+# TARGET must be set when deployed to an Apcera cluster.
+if [ -z "$TARGET" ]; then
+    echo "$0:Please set the TARGET environment variable"
+    exit 1
+else
+    echo "$0: TARGET CLUSTER is ${TARGET}";echo
+fi
+MASTER="http://master.apcera.local:8080"
+JENKINS_HOME=/var/jenkins_home
 
-# start the slave
-java -jar cli.jar -fsroot /root/.jenkins/workspace -master http://master.apcera.local:8080 -executors 1
+
+java -jar /cli.jar -fsroot ${JENKINS_HOME}/workspace -master ${MASTER} -executors 1

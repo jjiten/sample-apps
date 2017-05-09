@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# This scripts cleans up the objects creatd by the deploy of jenkins-manifest.json
+# This script cleans up the objects created by the deploy of jenkins-manifest.json
 #
 
 echo "Deleting jobs ..."
