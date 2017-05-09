@@ -1,7 +1,7 @@
-# .NET Runtime Package and Stager
-This directory contains a .NET Core runtime package and a custom stager that can be used to stage .NET Core and ASP.NET Core applications to Apcera.  I've also included a barebones sample ASP.NET Core application and instructions on how to create it.
+# Dotnet Runtime Package and Stager
+This directory contains a dotnet runtime package and a custom dotnet stager that can be used to stage .NET Core and ASP.NET Core applications to Apcera.  I've also included a barebones sample ASP.NET Core application and instructions on how to create it.
 
-## .NET Runtime Package
+## Dotnet Runtime Package
 The dotnet-core-sdk-1.0.1-ubuntu-14.04 runtime package is created from the file [dotnet-core-sdk-1.0.1-ubuntu-14.04.conf](./sdk/dotnet-core-sdk-1.0.1-ubuntu-14.04.conf) with the command `apc package build dotnet-core-sdk-1.0.1-ubuntu-14.04.conf`. It requires a package providing the os.ubuntu dependency which any Apcera cluster should have. It will be placed in the /apcera/pkg/runtimes namespace. It provides the following dependencies: dotnet-core, dotnet-core-1.0.1, dotnet-core-ubuntu, dotnet-core-1.0.1-ubuntu, and dotnet-core-1.0.1-ubuntu-14.04. As suggested by its name, it includes the .NET Core SDK which includes the .NET Core runtime. (This is analogous to a Java JDK including the Java JRE.)
 
 The package script uses apt-get to install dotnet-dev-1.0.1.
@@ -20,7 +20,7 @@ Note that this creates the staging pipeline in the /apcera namespace and the sta
 ### Start Commands
 When staging source code, we set the start command to `dotnet restore ; dotnet run`. If running dotnet restore each time you start the app takes too long, I recommend that you stage your published DLLs instead. When staging published .NET DLLs, we set the start command to `dotnet <app_name>.dll` where \<app_name\> matches the prefix of the .deps.json file.
 
-### Why No DotNet Dependency Is Included
+### Why No Dotnet Dependency Is Included
 In the first version of the dotnet stager, I actually included the dotnet-core dependency provided by the dotnet-core-sdk-1.0.1-ubuntu-14.04 runtime package. However, the first customer who tested the stager wanted the flexibility to base their .NET apps on various standard .NET Docker images as well as on runtime packages like the one I had created. To give customers more flexibility, I removed the dotnet-core dependency from the stager. This does have the consequence, however, that customers must specify their own dotnet dependency with the --depends-on or -do option of the `apc app create` command or in the package_dependencies section of a continuum.conf application manifest.
 
 ### Example of Staging an Application with the Dotnet Stager
@@ -54,7 +54,7 @@ apc app create --user root
 ```
 The only thing you still need to specify on the command line is that the user will be root.
 
-### Exporting and Importing the dotnet staging pipeline and stager
+### Exporting and Importing the Dotnet Staging Pipeline and Stager
 If desired, you can export the staging pipeline and stager from one Apcera cluster and import them into another using these commands:
 ```console
 apc staging pipeline export /apcera::dotnet
