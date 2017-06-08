@@ -1,6 +1,7 @@
 require 'open3'
 require 'logger'
 require 'json'
+require 'net/http'
 
 $logger = Logger.new(STDOUT)
 $logger.level = Logger::WARN
@@ -77,4 +78,12 @@ def provided(name)
   if provided? name
     yield
   end
+end
+
+def storage_name()
+  ENV['STORAGE'] ? ENV['STORAGE'] : "/apcera/providers::apcfs-ha"
+end
+
+def dc_tag()
+  ENV['DC_TAG'] ? "-ht #{ENV['DC_TAG']}" : ""
 end

@@ -1,7 +1,7 @@
 # encoding: utf-8
 require 'spec_helper'
 
-RSpec.describe 'example-go-rabbitmq' do
+RSpec.describe 'example-go-rabbitmq', :rabbitmq, :go do
   let (:app) { 'example-go-rabbitmq' }
 
   it 'should be able to push an pop messages' do

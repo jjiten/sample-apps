@@ -13,7 +13,7 @@ namespace :example_java_jar_hello do
 
     provided("java") do
       cd(sample_app) do
-        apc "app create #{sample_app} --disable-routes"
+        apc "app create #{sample_app} --disable-routes #{dc_tag()}"
         apc "app start #{sample_app}"
       end
     end

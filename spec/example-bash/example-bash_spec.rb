@@ -1,7 +1,7 @@
 # encoding: utf-8
 require 'spec_helper'
 
-RSpec.describe 'example-bash' do
+RSpec.describe 'example-bash', :bash do
   let (:app) { 'example-bash' }
 
   it 'should respond with an http 200 and contain sample text' do

@@ -1,7 +1,7 @@
 # encoding: utf-8
 require 'spec_helper'
 
-RSpec.describe 'nats-ping' do
+RSpec.describe 'nats-ping', :nats, :go do
   let (:app) { 'nats-ping' }
 
   it 'should ping' do

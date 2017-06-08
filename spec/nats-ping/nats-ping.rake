@@ -4,8 +4,8 @@ namespace :nats_ping do
   desc "Install the #{sample_app} sample application."
   task :install do
     cd(sample_app) do
-      apc "docker run #{sample_app}-nats-server -i nats --restart always"
-      apc "docker run #{sample_app}-client -i apcera/nats-ping-client --no-start"
+      apc "docker run #{sample_app}-nats-server -i nats --restart always #{dc_tag()}"
+      apc "docker run #{sample_app}-client -i apcera/nats-ping-client --restart always #{dc_tag()}"
       apc "job link #{sample_app}-client --to #{sample_app}-nats-server --name nats --port 4222"
       apc "job start #{sample_app}-client"
     end

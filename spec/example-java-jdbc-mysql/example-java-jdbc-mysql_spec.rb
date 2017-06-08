@@ -1,7 +1,7 @@
 # encoding: utf-8
 require 'spec_helper'
 
-RSpec.describe 'example-java-jdbc-mysql' do
+RSpec.describe 'example-java-jdbc-mysql', :mysql, :storage, :java do
   let (:app) { 'example-java-jdbc-mysql' }
 
   it 'should have a successful MySQL connection' do

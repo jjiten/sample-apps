@@ -1,7 +1,7 @@
 # encoding: utf-8
 require 'spec_helper'
 
-RSpec.describe 'broadcast-virtual-net' do
+RSpec.describe 'broadcast-virtual-net', :network, :go do
   let (:app) { 'broadcast-virtual-net' }
 
   it 'should recieve HELLO!' do

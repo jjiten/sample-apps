@@ -14,11 +14,12 @@ namespace :example_java_jdbc_mysql do
     provided("java") do
       cd(sample_app) do
         password = rand(36**16).to_s(36)  # Create a random 16 character password
-        apc "docker run #{sample_app}-mysql-server --restart always --image mysql --tag 5.7.13 --port 3306 --provider /apcera/providers::apcfs-ha --env-set MYSQL_ROOT_PASSWORD=#{password}"
-        watch_logs("#{sample_app}-mysql-server", "mysqld: ready for connections", 18, 10)  # Wait up to 3 minutes to have mysql startup
+        apc "docker run #{sample_app}-mysql-server --restart always --image mysql --tag 5.7.13 --port 3306 --provider #{storage_name()} --env-set MYSQL_ROOT_PASSWORD=#{password} #{dc_tag()}"
+        watch_logs("#{sample_app}-mysql-server", "mysqld: ready for connections", 60, 10)  # Wait up to 10 minutes to have mysql startup
+        sleep 60  # TODO Fix race condition.  It is possible that the required ports are not setup before calling provider register.
         apc "provider register #{sample_app}-mysql-provider --job #{sample_app}-mysql-server --type mysql --url mysql://root:#{password}@#{sample_app}-mysql-server --description 'MySQL DB for #{sample_app}'"
         apc "service create #{sample_app}-mysql-service -t mysql --provider #{sample_app}-mysql-provider"
-        apc "app create #{sample_app} --disable-routes"
+        apc "app create #{sample_app} --disable-routes #{dc_tag()}"
         apc "service bind #{sample_app}-mysql-service -j #{sample_app}"
         apc "app start #{sample_app}"
       end

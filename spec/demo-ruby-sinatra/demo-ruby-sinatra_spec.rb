@@ -1,7 +1,7 @@
 # encoding: utf-8
 require 'spec_helper'
 
-RSpec.describe 'demo-ruby-sinatra' do
+RSpec.describe 'demo-ruby-sinatra', :ruby do
   let (:app) { 'demo-ruby-sinatra' }
 
   it 'should respond with an http 200 and contain Sinatra Sample' do

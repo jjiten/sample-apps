@@ -4,7 +4,8 @@ namespace :example_go_var do
   desc "Install the #{sample_app} sample application."
   task :install do
     cd(sample_app) do
-      apc "app create #{sample_app} --start-cmd='./example-go-var TEXT'"
+      apc "app create #{sample_app} --start-cmd='./example-go-var TEXT' #{dc_tag()}"
+      #apc "app create #{sample_app} --start-cmd='./app TEXT'"
       apc "app start #{sample_app}"
     end
   end

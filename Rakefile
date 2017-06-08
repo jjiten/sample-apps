@@ -24,6 +24,7 @@ end
 desc 'Call test on all sample apps.'
 task :test do
   RSpec::Core::RakeTask.new(:spec) do |t|
+    ENV['RSPEC_OPTS'] && t.rspec_opts = ENV['RSPEC_OPTS']
     t.pattern = 'spec/*/*_spec.rb'
   end
   Rake::Task["spec"].execute

@@ -7,11 +7,11 @@ namespace :demo_ruby_sinatra do
       apc "staging pipeline clone -n #{sample_app}-ruby /apcera::ruby"
 
       cd("rspec-stager") do
-        apc "stager create #{sample_app}-ruby-rspec -p rspec-stager --start-command=./rspec-stager --additive --allow-egress"
+        apc "stager create #{sample_app}-ruby-rspec -p rspec-stager --start-command=./rspec-stager --additive --allow-egress #{dc_tag()}"
       end
 
       apc "staging pipeline append #{sample_app}-ruby #{sample_app}-ruby-rspec"
-      apc "app create #{sample_app} --start --staging=#{sample_app}-ruby"
+      apc "app create #{sample_app} --start --staging=#{sample_app}-ruby #{dc_tag()}"
     end
   end
 

@@ -1,7 +1,7 @@
 # encoding: utf-8
 require 'spec_helper'
 
-RSpec.describe 'example-go-var' do
+RSpec.describe 'example-go-var', :go do
   let (:app) { 'example-go-var' }
 
   it 'should respond with an http 200 and contain hello world' do

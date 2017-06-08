@@ -5,11 +5,11 @@ namespace :broadcast_virtual_net do
   task :install do
     cd(sample_app) do
       cd('sender') do
-        apc "app create #{sample_app}-cast-send --disable-routes"
+        apc "app create #{sample_app}-cast-send --disable-routes #{dc_tag()}"
       end
 
       cd('listener') do
-        apc "app create #{sample_app}-cast-listen --disable-routes"
+        apc "app create #{sample_app}-cast-listen --disable-routes #{dc_tag()}"
       end
 
       apc "network create #{sample_app}-mynet"
