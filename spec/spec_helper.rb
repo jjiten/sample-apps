@@ -19,6 +19,7 @@ end
 # Run the apc command with the given parameters.
 def apc(command)
   cmd_line = "apc #{command} --batch"
+  SimpleLog.log.info { "CMD: #{cmd_line}" }
   stdout, stderr, status = execute(cmd_line)
 
   SimpleLog.log.info { "STDOUT: #{stdout}" } unless stdout.empty?
@@ -72,6 +73,11 @@ def watch_logs(application, string_to_watch_for, number_of_times, sleep_between)
   end
 
   return false
+end
+
+def current_path()
+  stdout, stderr, status = execute("apc cd | awk '{print $3}'")
+  stdout.strip()[1..-2]
 end
 
 def provided(name)
