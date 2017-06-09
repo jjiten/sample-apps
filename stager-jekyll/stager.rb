@@ -31,10 +31,10 @@ begin
   Bundler.with_clean_env do
     Dir.chdir("site") do |apppath|
       # extract the file
-      exe("tar xzf ../pkg.tar.gz")
+      exe("tar xzf /app/pkg.tar.gz")
 
       # run bundle install
-      exe("bundle install --path ../site-vendor/bundle --binstubs ../site-vendor/bundle/bin --deployment")
+      exe("cd /app/site/app/www; bundle install --path /app/site-vendor/bundle --binstubs /app/site-vendor/bundle/bin --deployment")
 
       # set some environment variables to help with ruby handling the encoding
       # on files.
@@ -42,11 +42,11 @@ begin
       ENV["LANG"] = "en_US.UTF-8"
 
       # generate the site
-      exe("../site-vendor/bundle/bin/jekyll build --trace")
+      exe("/app/site-vendor/bundle/bin/jekyll build --trace")
 
       # tar up the site conents
       Dir.chdir("_site") do |sitepath|
-        exe("tar czf ../../site.tar.gz .")
+        exe("cd /app/site; tar czf /app/site.tar.gz .")
       end
     end
   end

@@ -14,7 +14,7 @@ namespace :example_go_rabbitmq do
 
     provided("rabbitmq") do
       cd(sample_app) do
-        apc "app create #{sample_app}"
+        apc "app create #{sample_app} #{dc_tag()}"
         apc "service create #{sample_app}-service --type rabbitmq"
         apc "service bind #{sample_app}-service --job #{sample_app}"
         apc "app start #{sample_app}"
