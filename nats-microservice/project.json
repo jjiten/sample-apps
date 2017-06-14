@@ -1,6 +1,6 @@
 {
   "jobs": {
-    "job::/sandbox/admin::nats-server": {
+    "job::/sandbox/<user>::nats-server": {
       "docker": {
         "image": "nats:0.7.2"
       },
@@ -16,20 +16,17 @@
       ],
       "state": "started"
     },
-    "job::/sandbox/admin::nats-app": {
+    "job::/sandbox/<user>::nats-app": {
       "packages": [
-        { "fqn": "package::/sandbox/admin::nats-app" }
+        { "fqn": "package::/sandbox/<user>::nats-app" }
       ],
       "links": {
         "NATS": {
-          "fqn": "job::/sandbox/admin::nats-server",
+          "fqn": "job::/sandbox/<user>::nats-server",
           "port": 4222
         }
       },
       "exposed_ports": [ 0 ],
-      "start": {
-        "cmd": "/app/webapp"
-      },
       "instances": 3,
       "routes": [
         {
@@ -42,29 +39,26 @@
       ],
       "state": "started"
     },
-    "job::/sandbox/admin::nats-worker": {
+    "job::/sandbox/<user>::nats-worker": {
       "packages": [
-        { "fqn": "package::/sandbox/admin::nats-worker" }
+        { "fqn": "package::/sandbox/<user>::nats-worker" }
       ],
       "links": {
         "NATS": {
-          "fqn": "job::/sandbox/admin::nats-server",
+          "fqn": "job::/sandbox/<user>::nats-server",
           "port": 4222
         }
-      },
-      "start": {
-        "cmd": "/app/worker"
       },
       "instances": 1,
       "state": "started"
     },
-    "job::/sandbox/admin::nats-ops": {
+    "job::/sandbox/<user>::nats-ops": {
       "packages": [
         { "fqn": "package::/apcera/pkg/os::ubuntu-14.04-apc3" }
       ],
       "links": {
         "NATS": {
-          "fqn": "job::/sandbox/admin::nats-server",
+          "fqn": "job::/sandbox/<user>::nats-server",
           "port": 4222
         }
       },
