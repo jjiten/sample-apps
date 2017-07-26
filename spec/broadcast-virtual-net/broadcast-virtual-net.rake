@@ -38,9 +38,9 @@ namespace :broadcast_virtual_net do
   desc "Teardown the #{sample_app} sample application."
   task :teardown do
     cd(sample_app) do
-      apc "app delete #{sample_app}-cast-send"
-      apc "app delete #{sample_app}-cast-listen"
-      apc "network delete #{sample_app}-mynet"
+      apc_safe "app delete #{sample_app}-cast-send"
+      apc_safe "app delete #{sample_app}-cast-listen"
+      apc_safe "network delete #{sample_app}-mynet"
     end
   end
 

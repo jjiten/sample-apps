@@ -45,7 +45,7 @@ namespace :example_java_hello do
 
     provided("java") do
       cd(sample_app) do
-        apc "app delete #{sample_app}"
+        apc_safe "app delete #{sample_app}"
       end
     end
   end

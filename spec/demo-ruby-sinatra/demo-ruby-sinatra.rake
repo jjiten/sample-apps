@@ -30,9 +30,9 @@ namespace :demo_ruby_sinatra do
   desc "Teardown the #{sample_app} sample application."
   task :teardown do
     cd(sample_app) do
-      apc "staging pipeline delete #{sample_app}-ruby"
-      apc "stager delete #{sample_app}-ruby-rspec"
-      apc "app delete #{sample_app}"
+      apc_safe "staging pipeline delete #{sample_app}-ruby"
+      apc_safe "stager delete #{sample_app}-ruby-rspec"
+      apc_safe "app delete #{sample_app}"
     end
   end
 

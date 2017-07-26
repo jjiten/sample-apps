@@ -52,10 +52,10 @@ namespace :example_java_jdbc_mysql do
 
     provided("java") do
       cd(sample_app) do
-        apc "app delete #{sample_app}"
-        apc "service delete #{sample_app}-mysql-service"
-        apc "provider delete #{sample_app}-mysql-provider"
-        apc "job delete #{sample_app}-mysql-server --delete-services"
+        apc_safe "app delete #{sample_app}"
+        apc_safe "service delete #{sample_app}-mysql-service"
+        apc_safe "provider delete #{sample_app}-mysql-provider"
+        apc_safe "job delete #{sample_app}-mysql-server --delete-services"
       end
     end
   end

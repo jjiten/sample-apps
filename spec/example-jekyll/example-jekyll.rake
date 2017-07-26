@@ -32,10 +32,10 @@ namespace :example_jekyll do
   desc "Teardown the #{sample_app} sample application."
   task :teardown do
     cd(sample_app) do
-      apc "staging pipeline delete #{stager_jekyll}-static"
-      apc "staging pipeline delete #{stager_jekyll}"
-      apc "stager delete #{stager_jekyll}"
-      apc "app delete #{sample_app}"
+      apc_safe "staging pipeline delete #{stager_jekyll}-static"
+      apc_safe "staging pipeline delete #{stager_jekyll}"
+      apc_safe "stager delete #{stager_jekyll}"
+      apc_safe "app delete #{sample_app}"
     end
   end
 

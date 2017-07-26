@@ -27,8 +27,8 @@ namespace :nats_ping do
   desc "Teardown the #{sample_app} sample application."
   task :teardown do
     cd(sample_app) do
-      apc "app delete #{sample_app}-client"
-      apc "app delete #{sample_app}-nats-server"
+      apc_safe "app delete #{sample_app}-client"
+      apc_safe "app delete #{sample_app}-nats-server"
     end
   end
 

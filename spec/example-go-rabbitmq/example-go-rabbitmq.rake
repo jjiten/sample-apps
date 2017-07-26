@@ -46,8 +46,8 @@ namespace :example_go_rabbitmq do
 
     provided("rabbitmq") do
       cd(sample_app) do
-        apc "app delete #{sample_app}"
-        apc "service delete #{sample_app}-service"
+        apc_safe "app delete #{sample_app}"
+        apc_safe "service delete #{sample_app}-service"
       end
     end
   end

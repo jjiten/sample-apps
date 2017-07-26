@@ -16,14 +16,27 @@ class SimpleLog
   end
 end
 
-# Run the apc command with the given parameters.
-def apc(command)
+# Run the apc command with the given parameters. Will _not_ raise an exception
+# if a non-zero return code is returned from the command.
+def apc_safe(command)
   cmd_line = "apc #{command} --batch"
   SimpleLog.log.info { "CMD: #{cmd_line}" }
   stdout, stderr, status = execute(cmd_line)
 
   SimpleLog.log.info { "STDOUT: #{stdout}" } unless stdout.empty?
   SimpleLog.log.info { "STDERR: #{stderr}" } unless stderr.empty?
+
+  [stdout, stderr, status]
+end
+
+# Run the apc command with the given parameters.  Will raise an exception if
+# a non-zero return code is returned from the command.
+def apc(command)
+  stdout, stderr, status = apc_safe(command)
+
+  if status.exitstatus != 0
+    raise "The command 'apc #{command} --batch' failed with a return code #{status.exitstatus}"
+  end
 
   [stdout, stderr, status]
 end

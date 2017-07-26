@@ -34,10 +34,10 @@ namespace :example_mono do
   desc "Teardown the #{sample_app} sample application."
   task :teardown do
     cd(sample_app) do
-      apc "staging pipeline delete #{sample_app}-pipeline"
-      apc "stager delete #{sample_app}-stager"
-      apc "app delete #{sample_app}"
-      apc "package delete #{current_path()}::mono"
+      apc_safe "staging pipeline delete #{sample_app}-pipeline"
+      apc_safe "stager delete #{sample_app}-stager"
+      apc_safe "app delete #{sample_app}"
+      apc_safe "package delete #{current_path()}::mono"
     end
   end
 
