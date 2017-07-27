@@ -60,18 +60,14 @@ end
 
 # If provided then true, else false
 def provided?(name)
-  cmd_line = "apc package list -ns / --json"
+  cmd_line = "apc package list -ns / --json --provides #{name}"
   stdout, stderr, status = execute(cmd_line)
-  JSON.parse(stdout).each do |package|
-    if package['provides']
-      package['provides'].each do |providers|
-        if providers['name'] == name
-          return true
-        end
-      end
-    end
+  if JSON.parse(stdout).empty?
+    p "No packages providing #{name} found"
+    return false
+  else
+    return true
   end
-  false
 end
 
 def watch_logs(application, string_to_watch_for, number_of_times, sleep_between)
