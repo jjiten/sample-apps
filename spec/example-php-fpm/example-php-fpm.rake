@@ -3,7 +3,7 @@ namespace :example_php_fpm do
 
   desc "Install the #{sample_app} sample application."
   task :install do
-    provided?("php-fpm-nginx") do
+    provided("php-fpm-nginx") do
       cd(sample_app) do
         apc "app create #{sample_app} --start #{dc_tag()}"
       end
