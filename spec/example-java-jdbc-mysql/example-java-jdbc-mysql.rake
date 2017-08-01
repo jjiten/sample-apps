@@ -19,7 +19,7 @@ namespace :example_java_jdbc_mysql do
         sleep 60  # TODO Fix race condition.  It is possible that the required ports are not setup before calling provider register.
         apc "provider register #{sample_app}-mysql-provider --job #{sample_app}-mysql-server --type mysql --url mysql://root:#{password}@#{sample_app}-mysql-server --description 'MySQL DB for #{sample_app}'"
         apc "service create #{sample_app}-mysql-service -t mysql --provider #{sample_app}-mysql-provider"
-        apc "app create #{sample_app} --disable-routes #{dc_tag()}"
+        apc "app create #{sample_app} --memory 512 --disable-routes #{dc_tag()}"
         apc "service bind #{sample_app}-mysql-service -j #{sample_app}"
         apc "app start #{sample_app}"
       end

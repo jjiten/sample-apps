@@ -4,7 +4,7 @@ namespace :example_go_system_info do
   desc "Install the #{sample_app} sample application."
   task :install do
     cd(sample_app) do
-      apc "app create #{sample_app} #{dc_tag()}"
+      apc "app create #{sample_app} --memory 64 #{dc_tag()}"
       apc "app start #{sample_app}"
     end
   end
