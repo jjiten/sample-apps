@@ -1,11 +1,10 @@
 ## Sticky session cookie demo application
 
-This application demonstrates how to deploy an application using sticky session cookies so that all request a web browser are routed to the same back-end job instance.
+This PHP application demonstrates how to use sticky session cookies so that HTTP requests from a web browser are routed to the same back-end job instance. The demo app displays the values of the `CNTM_INSTANCE_UUID` and `CNTM_JOB_FQN` [environment variables](https://docs.apcera.com/jobs/envt-vars/) of the job instance handling the request. 
 
-The demo PHP application displays uses environment variables set on job instances to display the UUID of the job instance that handled the request, as well as the FQN of the job definition. It also sets a cookie named `MY_COOKIE`, which matches the name of the sticky session cookie you set on the application.
+The PHP app sets a cookie named `MY_COOKIE` in its response, which matches the name of the sticky session cookie added to the app.
 
-
-```html
+```php
 <html>
     <head><title>Sticky Cookie Session Demo</title></head>
     <body style="font-family: helvetica;">
@@ -16,7 +15,7 @@ The demo PHP application displays uses environment variables set on job instance
             <?php
 
                 // Cookie value is not significant
-                setcookie("MY_COOKIE", "value");
+                setcookie("MY_COOKIE", "cookie_value");
 
                 echo "<p>The job you have reached is:</p>";
                 echo "<h3>" . getenv('CNTM_JOB_FQN') . "<h3>";
@@ -30,24 +29,28 @@ The demo PHP application displays uses environment variables set on job instance
 </html>
 ```
 
-Deploy the application with five instance, and set a sticky session cookie named `MY_COOKIE` on the job:
+## Deploying the demo app
+
+To deploy the application run the following APC command, being sure to update the application's `--route` for your cluster's environment/domain: 
 
 ```bash
-apc application create sticky-application  \
+apc app create sticky-application  \
 --sticky-session-cookies=MY_COOKIE \
 --routes http://sticky-application.example.com \
---instances 5 \
+--instances 10 \
 --start
 ```
 
-Open the application's route in a web browser and repeatedly reload the page. You should notice, on each load, that the displayed value of the instance UUID stays the same, indicating that all requests are reaching the same job instance. 
+This starts the application with 10 instances and a sticky session cookie of `MY_COOKIE`. 
+
+Open the application's route in a browser and note the value of the **Instance** field displayed on the we  page; this is the UUID of the job instance handling the request. Click the **Reload** button on the page repeatedly. You should notice that the displayed UUID value does not change, indicating that each request is being handled by the same job instance.
 
 ![](browser.png)
 
-As a test try changing the name of the job's sticky session cookie (or deleting it), for example:
+As a test, try removing the job's sticky session cookie with the following command:
 
 ```bash
-apc application update sticky-application --sticky-session-cookies=NEW_COOKIE
+apc application update sticky-application --no-sticky-session-cookies
 ```
 
-Now when you reload the browser page, the Apcera Platform router will randomly route the request to one of the job's five instances, so a different instance UUID will appear.
+Open the job's route in a new browser window or tab and repeatedly press the **Reload** button. In this case you should randomly see that the browser is connecting to a different job instance.
