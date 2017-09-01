@@ -16,7 +16,7 @@
             ],
             "resources": {
                 "memory": "4GB",
-                "disk_space": "50GB"
+                "disk_space": "5GB"
             },
             "services":{
                 "egress": {
