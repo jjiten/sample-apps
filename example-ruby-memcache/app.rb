@@ -15,11 +15,16 @@ class App < Sinatra::Base
   end
 
   get "/get/:key" do |key|
-    dalli.get(key)
+    client = dalli
+    value = client.get(key)
+    client.close()
+    value
   end
 
   get "/set/:key/:value" do |key,value|
-    dalli.set(key, value)
+    client = dalli
+    client.set(key, value)
+    client.close()
     "OK"
   end
 end
